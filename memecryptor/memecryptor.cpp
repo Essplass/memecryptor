@@ -6,8 +6,15 @@
 using namespace std;
 
 void printByteArray(const vector<uint8_t>& byteArray);
-int testvalue_g = 1;
 
+int testvalue_g = 1;
+int testvalue_g2 = 0;
+int cryptValue;
+int tempValue;
+int moonValue;
+int atmosphereValue;
+
+// Max added value = 20+40+10+99
 // Encryption algo that uses todays temperature, bitcoins price / ethereums price, moon phase and a 2 digit random number from random.org
 
 class manipulators {
@@ -35,13 +42,14 @@ public:
             byte = byte + testvalue_g;             // Modify the element in the new vector
         }
         printByteArray(modifiedArray);             // Print the modified byte array
+        testvalue_g2 = testvalue_g;
         return modifiedArray;
     }
 
     vector<uint8_t> cryptoEncrypt(const vector<uint8_t>& byteArray)
     {
-        int btcPrice = btc();
-        int ethPrice = eth();
+        int btcPrice = getBtcPrice();
+        int ethPrice = getEthPrice();
         int cryptoValue;
         cryptoValue = btcPrice / ethPrice;
         cout << "btcPrice: " << btcPrice << "\n";
@@ -58,8 +66,11 @@ public:
     vector<uint8_t> tempEncrypt(const vector<uint8_t>& byteArray, int temperature)
     {
     }
-    vector<uint8_t> moonPhaseEncrypt(const vector<uint8_t>& byteArray, int moonPhase)
+    vector<uint8_t> moonPhaseEncrypt(const vector<uint8_t>&byteArray)
     {
+        int moonPhase = getMoonPhase();
+        cout << moonPhase;
+        return byteArray;
     }
     vector<uint8_t> atmosphereEncrypt(const vector<uint8_t>& byteArray, int atmosphere)
     {
@@ -103,5 +114,6 @@ int main()
     encryptors encObj;
     modifiedArray = encObj.cryptoEncrypt(byteArray);
     modifiedArray = encObj.testAddByte(modifiedArray, testvalue_g);
+    modifiedArray = encObj.moonPhaseEncrypt(modifiedArray);
     return 0;
 }

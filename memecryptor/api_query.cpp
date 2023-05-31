@@ -16,7 +16,7 @@ size_t WriteCallback(char* data, size_t size, size_t nmemb, std::string* writerD
     return size * nmemb;
 }
 
-int btc() {
+int getBtcPrice() {
     CURL* curl;
     CURLcode res;
     std::string response;
@@ -74,7 +74,7 @@ int btc() {
     return -1;  // Return an error value
 }
 
-int eth() {
+int getEthPrice() {
     CURL* curl;
     CURLcode res;
     std::string response;
@@ -134,6 +134,59 @@ int eth() {
 
 
 
+int getMoonPhase() {
+    CURL* curl;
+    CURLcode res;
+    std::string response;
 
+    // Initialize the libcurl library
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+
+    // Create a curl handle
+    curl = curl_easy_init();
+    if (curl) {
+        // Set the URL for the API endpoint to get sunrise, sunset, and moon phase
+        curl_easy_setopt(curl, CURLOPT_URL, "https://api.sunrise-sunset.org/json?lat=0&lng=0&date=today&formatted=0");
+
+        // Set the callback function to write the response data
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+
+        // Set the response data object
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+
+        // Perform the request
+        res = curl_easy_perform(curl);
+
+        // Check for errors
+        if (res != CURLE_OK) {
+            std::cerr << "cURL request failed: " << curl_easy_strerror(res) << std::endl;
+            return -1;  // Return an error value
+        }
+        else {
+            // Parse the JSON response
+            json jsonResponse = json::parse(response);
+
+            // Extract the moon phase as a string
+            std::string moonPhaseStr = jsonResponse["daily"]["data"][0]["moonPhase"];
+
+            // Convert the moon phase string to an integer
+            int moonPhaseInt = std::stoi(moonPhaseStr);
+
+            // Cleanup curl handle
+            curl_easy_cleanup(curl);
+
+            // Cleanup libcurl
+            curl_global_cleanup();
+
+            // Return the moon phase as an integer
+            return moonPhaseInt;
+        }
+    }
+
+    // Cleanup libcurl
+    curl_global_cleanup();
+
+    return -1;  // Return an error value
+}
 
 
