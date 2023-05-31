@@ -37,9 +37,9 @@ To use memecryptor, follow these steps:
 
 memecryptor utilizes the following APIs:
 
-- Atmospheric Pressure API: Random numbers are derived from atmospheric pressure data obtained from random.org. (API documentation: [link](https://api.random.org/json-rpc/4/basic]))
-- UK Temperature API: The current temperature in the UK is retrieved from this API to contribute to the encryption process. (API documentation: [link](https://www.meteomatics.com/en/api/getting-started/))
-- Cryptocurrency Price API: Live prices of cryptocurrencies are fetched from this API to incorporate in the encryption algorithm. (API documentation: [link](https://www.coindesk.com/))
+- Atmospheric Pressure API: Random numbers are derived from atmospheric pressure data obtained from random.org. (API documentation: [random.org](https://api.random.org/json-rpc/4/basic]))
+- UK Temperature API: The current temperature in the UK is retrieved from this API to contribute to the encryption process. (API documentation: [Meteomatics](https://www.meteomatics.com/en/api/getting-started/))
+- Cryptocurrency Price API: Live prices of cryptocurrencies are fetched from this API to incorporate in the encryption algorithm. (API documentation: [Coindesk](https://www.coindesk.com/))
 
 Please refer to the respective API documentation for more information on their usage and endpoints.
 
