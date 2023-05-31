@@ -1,6 +1,6 @@
 # memecryptor
 
-memecryptor is a fun C++ project that encrypts a string using data received from the following APIs:
+memecryptor is a C++ project that encrypts a string using data received from the following APIs:
 - Random numbers derived from atmospheric pressure
 - The current temperature in the UK
 - Live cryptocurrency prices
