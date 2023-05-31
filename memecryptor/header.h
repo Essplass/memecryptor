@@ -3,6 +3,7 @@
 #define header_h
 int getBtcPrice();
 int getEthPrice();
-int getMoonPhase();
+int getCurrentTemperature();
+int getAtmosphere();
 #endif // !header_h
 

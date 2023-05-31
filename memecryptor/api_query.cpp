@@ -16,6 +16,54 @@ size_t WriteCallback(char* data, size_t size, size_t nmemb, std::string* writerD
     return size * nmemb;
 }
 
+json createJsonRpcRequest(const std::string& method, const json& params) {
+    json request;
+    request["jsonrpc"] = "2.0";
+    request["method"] = "generateIntegers";
+    request["params"] = params;
+    request["id"] = 1;
+    return request;
+}
+
+json sendJsonRpcRequest(const std::string& url, const json& request) {
+    CURL* curl = curl_easy_init();
+    std::string response;
+
+    if (curl) {
+        // Set the URL for the API endpoint
+        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+
+        // Set the request headers
+        struct curl_slist* headers = NULL;
+        headers = curl_slist_append(headers, "Content-Type: application/json");
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+        // Set the request data
+        std::string requestData = request.dump();
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, requestData.c_str());
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, requestData.length());
+
+        // Set the callback function to write the response data
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+
+        // Set the response data object
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+
+        // Perform the request
+        CURLcode res = curl_easy_perform(curl);
+
+        // Check for errors
+        if (res != CURLE_OK) {
+            std::cerr << "cURL request failed: " << curl_easy_strerror(res) << std::endl;
+        }
+
+        // Cleanup curl handle
+        curl_easy_cleanup(curl);
+    }
+
+    return json::parse(response);
+}
+
 int getBtcPrice() {
     CURL* curl;
     CURLcode res;
@@ -132,9 +180,8 @@ int getEthPrice() {
     return -1;  // Return an error value
 }
 
-
-
-int getMoonPhase() {
+int getCurrentTemperature()
+{
     CURL* curl;
     CURLcode res;
     std::string response;
@@ -145,8 +192,8 @@ int getMoonPhase() {
     // Create a curl handle
     curl = curl_easy_init();
     if (curl) {
-        // Set the URL for the API endpoint to get sunrise, sunset, and moon phase
-        curl_easy_setopt(curl, CURLOPT_URL, "https://api.sunrise-sunset.org/json?lat=0&lng=0&date=today&formatted=0");
+        // Set the URL for the API endpoint
+        curl_easy_setopt(curl, CURLOPT_URL, "https://na_aford:P6Lmd99zMx@api.meteomatics.com/2023-05-31T00:00:00Z/t_2m:C/52.520551,13.461804/json");
 
         // Set the callback function to write the response data
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
@@ -160,17 +207,13 @@ int getMoonPhase() {
         // Check for errors
         if (res != CURLE_OK) {
             std::cerr << "cURL request failed: " << curl_easy_strerror(res) << std::endl;
-            return -1;  // Return an error value
         }
         else {
             // Parse the JSON response
             json jsonResponse = json::parse(response);
 
-            // Extract the moon phase as a string
-            std::string moonPhaseStr = jsonResponse["daily"]["data"][0]["moonPhase"];
-
-            // Convert the moon phase string to an integer
-            int moonPhaseInt = std::stoi(moonPhaseStr);
+            // Extract the temperature value
+            float temperature = jsonResponse["data"][0]["coordinates"][0]["dates"][0]["value"];
 
             // Cleanup curl handle
             curl_easy_cleanup(curl);
@@ -178,8 +221,8 @@ int getMoonPhase() {
             // Cleanup libcurl
             curl_global_cleanup();
 
-            // Return the moon phase as an integer
-            return moonPhaseInt;
+            // Return the temperature value as an integer
+            return static_cast<int>(temperature);
         }
     }
 
@@ -189,4 +232,58 @@ int getMoonPhase() {
     return -1;  // Return an error value
 }
 
+int getAtmosphere() {
+    // Construct the JSON-RPC request
+    json params;
+    params["apiKey"] = "c54e39cd-d449-4b7a-a8d2-64f733aee93b";
+    params["n"] = 1;
+    params["min"] = 2;
+    params["max"] = 9;
+    //params["replacement"] = true;
 
+    json request = createJsonRpcRequest("getAtmosphere", params);
+
+    // Send the JSON-RPC request
+    std::string url = "https://api.random.org/json-rpc/4/invoke";  // Replace with your JSON-RPC endpoint
+    json response = sendJsonRpcRequest(url, request);
+
+    // Print the JSON response for debugging
+    //std::cout << "JSON Response: " << response << std::endl;
+
+    // Process the JSON-RPC response
+    if (response.contains("result")) {
+        json result = response["result"];
+        if (result.contains("random")) {
+            json random = result["random"];
+            if (random.contains("data")) {
+                json data = random["data"];
+                if (data.is_array() && !data.empty()) {
+                    // Process the first value in the array
+                    int atmosphere = data[0].get<int>();
+
+                    // Print the atmosphere value
+                    //std::cout << "Atmosphere: " << atmosphere << std::endl;
+
+                    return atmosphere;
+                }
+                else {
+                    std::cerr << "Invalid data format: Expected non-empty array" << std::endl;
+                }
+            }
+            else {
+                std::cerr << "Missing or invalid 'data' field" << std::endl;
+            }
+        }
+        else {
+            std::cerr << "Missing or invalid 'random' field" << std::endl;
+        }
+    }
+    else if (response.contains("error")) {
+        std::cerr << "JSON-RPC request failed: " << response["error"]["message"] << std::endl;
+    }
+    else {
+        std::cerr << "Missing 'result' field" << std::endl;
+    }
+
+    return -1;  // Return an error value
+}
