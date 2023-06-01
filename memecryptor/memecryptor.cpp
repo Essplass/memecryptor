@@ -8,14 +8,11 @@ using namespace std;
 
 void printByteArray(const vector<uint8_t>& byteArray, string& crypt);
 
+vector<uint8_t> modifiedArray;
 int testvalue_g = 1;
 int cryptoValue;
 int temperatureValue;
 int atmosphereValue;
-
-
-// Max added value = 20+40+10+99
-// Encryption algo that uses today's temperature, Bitcoin's price / Ethereum's price, moon phase, and a 2-digit random number from random.org
 
 class manipulators {
 public:
@@ -142,7 +139,6 @@ string decrypt(vector<uint8_t> modifiedArray)
 int main()
 {
     system("Color 0D");
-    vector<uint8_t> modifiedArray;
     cout << " -------------------------------------------------------------------------" "\n";
     cout << " Hello and welcome to the Memecryptor a C++ project developed by Essplass!\n";
     cout << " -------------------------------------------------------------------------" "\n";
