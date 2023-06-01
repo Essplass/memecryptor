@@ -5,7 +5,7 @@ memecryptor is a C++ project that encrypts a string using data received from the
 - The current temperature in the UK
 - Live cryptocurrency prices
 
-![memecryptor](https://github.com/Essplass/memecryptor/assets/71947295/8d95bea6-dc33-40de-a12f-b902c9958e27.png)
+![image](https://github.com/Essplass/memecryptor/assets/71947295/6f7dca3e-da78-48df-adbc-49d738f58c75)
 
 ## Dependencies
 
